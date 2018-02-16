@@ -447,13 +447,13 @@ class Application:
 
             # Try to convert value to integer
             try:
-                value = string.atoi(value)
+                value = int(value)
             except ValueError:
                 pass
 
             # Find handler and call it (or count the number of option
             # instances on the command line)
-            handlername = 'handle' + string.replace(optionname, '-', '_')
+            handlername = 'handle' + optionname.replace('-', '_')
             try:
                 handler = getattr(self, handlername)
             except AttributeError:
