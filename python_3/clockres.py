@@ -16,15 +16,14 @@ def clockres(timer):
     wallclock = time.time
     start = wallclock()
     stop = wallclock() + TEST_TIME
-    spin_loops = list(range(1000))
+    spin_loops = range(1000)
     while 1:
         now = wallclock()
         if now >= stop:
             break
         for i in spin_loops:
             d[timer()] = 1
-    values = list(d.keys())
-    values.sort()
+    values = sorted(d.keys())
     min_diff = TEST_TIME
     for i in range(len(values) - 1):
         diff = values[i+1] - values[i]

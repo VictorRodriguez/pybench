@@ -1,10 +1,9 @@
 try:
-    str
+    unicode
 except NameError:
     raise ImportError
 
 from pybench import Test
-from string import join
 
 class ConcatUnicode(Test):
 
@@ -15,8 +14,8 @@ class ConcatUnicode(Test):
     def test(self):
 
         # Make sure the strings are *not* interned
-        s = str(join(list(map(str,list(range(100))))))
-        t = str(join(list(map(str,list(range(1,101))))))
+        s = unicode(u''.join(map(str,range(100))))
+        t = unicode(u''.join(map(str,range(1,101))))
 
         for i in range(self.rounds):
             t + s
@@ -81,8 +80,8 @@ class ConcatUnicode(Test):
 
     def calibrate(self):
 
-        s = str(join(list(map(str,list(range(100))))))
-        t = str(join(list(map(str,list(range(1,101))))))
+        s = unicode(u''.join(map(str,range(100))))
+        t = unicode(u''.join(map(str,range(1,101))))
 
         for i in range(self.rounds):
             pass
@@ -97,8 +96,8 @@ class CompareUnicode(Test):
     def test(self):
 
         # Make sure the strings are *not* interned
-        s = str(join(list(map(str,list(range(10))))))
-        t = str(join(list(map(str,list(range(10))))) + "abc")
+        s = unicode(u''.join(map(str,range(10))))
+        t = unicode(u''.join(map(str,range(10))) + "abc")
 
         for i in range(self.rounds):
             t < s
@@ -163,8 +162,8 @@ class CompareUnicode(Test):
 
     def calibrate(self):
 
-        s = str(join(list(map(str,list(range(10))))))
-        t = str(join(list(map(str,list(range(10))))) + "abc")
+        s = unicode(u''.join(map(str,range(10))))
+        t = unicode(u''.join(map(str,range(10))) + "abc")
 
         for i in range(self.rounds):
             pass
@@ -179,65 +178,65 @@ class CreateUnicodeWithConcat(Test):
     def test(self):
 
         for i in range(self.rounds):
-            s = 'om'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = u'om'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
-            s = s + 'xax'
-            s = s + 'xbx'
-            s = s + 'xcx'
-            s = s + 'xdx'
-            s = s + 'xex'
+            s = s + u'xax'
+            s = s + u'xbx'
+            s = s + u'xcx'
+            s = s + u'xdx'
+            s = s + u'xex'
 
     def calibrate(self):
 
@@ -253,7 +252,7 @@ class UnicodeSlicing(Test):
 
     def test(self):
 
-        s = str(join(list(map(str,list(range(100))))))
+        s = unicode(u''.join(map(str,range(100))))
 
         for i in range(self.rounds):
 
@@ -299,7 +298,7 @@ class UnicodeSlicing(Test):
 
     def calibrate(self):
 
-        s = str(join(list(map(str,list(range(100))))))
+        s = unicode(u''.join(map(str,range(100))))
 
         for i in range(self.rounds):
             pass
@@ -314,10 +313,10 @@ class UnicodeMappings(Test):
 
     def test(self):
 
-        s = join(list(map(chr,list(range(20)))),'')
-        t = join(list(map(chr,list(range(100)))),'')
-        u = join(list(map(chr,list(range(500)))),'')
-        v = join(list(map(chr,list(range(1000)))),'')
+        s = u''.join(map(unichr,range(20)))
+        t = u''.join(map(unichr,range(100)))
+        u = u''.join(map(unichr,range(500)))
+        v = u''.join(map(unichr,range(1000)))
 
         for i in range(self.rounds):
 
@@ -371,10 +370,10 @@ class UnicodeMappings(Test):
 
     def calibrate(self):
 
-        s = join(list(map(chr,list(range(20)))),'')
-        t = join(list(map(chr,list(range(100)))),'')
-        u = join(list(map(chr,list(range(500)))),'')
-        v = join(list(map(chr,list(range(1000)))),'')
+        s = u''.join(map(unichr,range(20)))
+        t = u''.join(map(unichr,range(100)))
+        u = u''.join(map(unichr,range(500)))
+        v = u''.join(map(unichr,range(1000)))
 
         for i in range(self.rounds):
             pass
@@ -387,7 +386,7 @@ class UnicodePredicates(Test):
 
     def test(self):
 
-        data = ('abc', '123', '   ', '\u1234\u2345\u3456', '\uFFFF'*10)
+        data = (u'abc', u'123', u'   ', u'\u1234\u2345\u3456', u'\uFFFF'*10)
         len_data = len(data)
 
         for i in range(self.rounds):
@@ -445,7 +444,7 @@ class UnicodePredicates(Test):
 
     def calibrate(self):
 
-        data = ('abc', '123', '   ', '\u1234\u2345\u3456', '\uFFFF'*10)
+        data = (u'abc', u'123', u'   ', u'\u1234\u2345\u3456', u'\uFFFF'*10)
         len_data = len(data)
 
         for i in range(self.rounds):
@@ -464,7 +463,7 @@ else:
 
         def test(self):
 
-            data = ('a', '1', ' ', '\u1234', '\uFFFF')
+            data = (u'a', u'1', u' ', u'\u1234', u'\uFFFF')
             len_data = len(data)
             digit = unicodedata.digit
             numeric = unicodedata.numeric
@@ -526,7 +525,7 @@ else:
 
         def calibrate(self):
 
-            data = ('a', '1', ' ', '\u1234', '\uFFFF')
+            data = (u'a', u'1', u' ', u'\u1234', u'\uFFFF')
             len_data = len(data)
             digit = unicodedata.digit
             numeric = unicodedata.numeric

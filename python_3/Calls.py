@@ -2,7 +2,7 @@ from pybench import Test
 
 class PythonFunctionCalls(Test):
 
-    version = 2.0
+    version = 2.1
     operations = 5*(1+4+4+2)
     rounds = 60000
 
@@ -173,16 +173,13 @@ class BuiltinFunctionCalls(Test):
     operations = 5*(2+5+5+5)
     rounds = 60000
 
-    def cmp(self,a,b):
-        return (a > b) - (a < b)
-
     def test(self):
 
         # localize functions
         f0 = globals
         f1 = hash
-        #f2 = cmp
-        f3 = range
+        f2 = divmod
+        f3 = max
 
         # do calls
         for i in range(self.rounds):
@@ -194,11 +191,11 @@ class BuiltinFunctionCalls(Test):
             f1(i)
             f1(i)
             f1(i)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
             f3(1,3,2)
             f3(1,3,2)
             f3(1,3,2)
@@ -212,11 +209,11 @@ class BuiltinFunctionCalls(Test):
             f1(i)
             f1(i)
             f1(i)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
             f3(1,3,2)
             f3(1,3,2)
             f3(1,3,2)
@@ -230,11 +227,11 @@ class BuiltinFunctionCalls(Test):
             f1(i)
             f1(i)
             f1(i)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
             f3(1,3,2)
             f3(1,3,2)
             f3(1,3,2)
@@ -248,11 +245,11 @@ class BuiltinFunctionCalls(Test):
             f1(i)
             f1(i)
             f1(i)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
             f3(1,3,2)
             f3(1,3,2)
             f3(1,3,2)
@@ -266,11 +263,11 @@ class BuiltinFunctionCalls(Test):
             f1(i)
             f1(i)
             f1(i)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
-            self.cmp(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
+            f2(1,2)
             f3(1,3,2)
             f3(1,3,2)
             f3(1,3,2)
@@ -282,8 +279,8 @@ class BuiltinFunctionCalls(Test):
         # localize functions
         f0 = dir
         f1 = hash
-        f2 = range
-        f3 = range
+        f2 = divmod
+        f3 = max
 
         # do calls
         for i in range(self.rounds):

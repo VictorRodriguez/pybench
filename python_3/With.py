@@ -1,4 +1,3 @@
-
 from pybench import Test
 
 class WithFinally(Test):

@@ -348,16 +348,10 @@ class SimpleDictManipulation(Test):
     operations = 5*(6 + 6 + 6 + 6)
     rounds = 100000
 
-    def has_key(self,value,list_var):
-        if value in list_var:
-            return True
-        else:
-            return False
-
     def test(self):
 
         d = {}
-        #has_key = d.has_key
+        has_key = lambda key: key in d
 
         for i in range(self.rounds):
 
@@ -375,12 +369,12 @@ class SimpleDictManipulation(Test):
             x = d[4]
             x = d[5]
 
-            self.has_key(0,d)
-            self.has_key(2,d)
-            self.has_key(4,d)
-            self.has_key(6,d)
-            self.has_key(8,d)
-            self.has_key(10,d)
+            has_key(0)
+            has_key(2)
+            has_key(4)
+            has_key(6)
+            has_key(8)
+            has_key(10)
 
             del d[0]
             del d[1]
@@ -403,12 +397,12 @@ class SimpleDictManipulation(Test):
             x = d[4]
             x = d[5]
 
-            self.has_key(0,d)
-            self.has_key(2,d)
-            self.has_key(4,d)
-            self.has_key(6,d)
-            self.has_key(8,d)
-            self.has_key(10,d)
+            has_key(0)
+            has_key(2)
+            has_key(4)
+            has_key(6)
+            has_key(8)
+            has_key(10)
 
             del d[0]
             del d[1]
@@ -431,12 +425,12 @@ class SimpleDictManipulation(Test):
             x = d[4]
             x = d[5]
 
-            self.has_key(0,d)
-            self.has_key(2,d)
-            self.has_key(4,d)
-            self.has_key(6,d)
-            self.has_key(8,d)
-            self.has_key(10,d)
+            has_key(0)
+            has_key(2)
+            has_key(4)
+            has_key(6)
+            has_key(8)
+            has_key(10)
 
             del d[0]
             del d[1]
@@ -459,12 +453,12 @@ class SimpleDictManipulation(Test):
             x = d[4]
             x = d[5]
 
-            self.has_key(0,d)
-            self.has_key(2,d)
-            self.has_key(4,d)
-            self.has_key(6,d)
-            self.has_key(8,d)
-            self.has_key(10,d)
+            has_key(0)
+            has_key(2)
+            has_key(4)
+            has_key(6)
+            has_key(8)
+            has_key(10)
 
             del d[0]
             del d[1]
@@ -487,12 +481,12 @@ class SimpleDictManipulation(Test):
             x = d[4]
             x = d[5]
 
-            self.has_key(0,d)
-            self.has_key(2,d)
-            self.has_key(4,d)
-            self.has_key(6,d)
-            self.has_key(8,d)
-            self.has_key(10,d)
+            has_key(0)
+            has_key(2)
+            has_key(4)
+            has_key(6)
+            has_key(8)
+            has_key(10)
 
             del d[0]
             del d[1]
@@ -504,5 +498,7 @@ class SimpleDictManipulation(Test):
     def calibrate(self):
 
         d = {}
+        has_key = lambda key: key in d
+
         for i in range(self.rounds):
             pass

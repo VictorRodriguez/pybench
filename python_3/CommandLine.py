@@ -11,6 +11,8 @@
 
 """
 
+from __future__ import print_function
+
 __copyright__ = """\
 Copyright (c), 1997-2006, Marc-Andre Lemburg (mal@lemburg.com)
 Copyright (c), 2000-2006, eGenix.com Software GmbH (info@egenix.com)
@@ -20,7 +22,7 @@ or contact the author. All Rights Reserved.
 
 __version__ = '1.2'
 
-import sys, getopt, string, glob, os, re, traceback
+import sys, getopt, glob, os, re, traceback
 
 ### Helpers
 
@@ -44,7 +46,7 @@ def _getopt_flags(options):
                 l.append(o.name+'=')
             else:
                 l.append(o.name)
-    return ''.join(s),l
+    return ''.join(s), l
 
 def invisible_input(prompt='>>> '):
 
@@ -97,8 +99,8 @@ def option_dict(options):
 # Alias
 getpasswd = invisible_input
 
-_integerRE = re.compile('\s*(-?\d+)\s*$')
-_integerRangeRE = re.compile('\s*(-?\d+)\s*-\s*(-?\d+)\s*$')
+_integerRE = re.compile(r'\s*(-?\d+)\s*$')
+_integerRangeRE = re.compile(r'\s*(-?\d+)\s*-\s*(-?\d+)\s*$')
 
 def srange(s,
 
@@ -123,8 +125,8 @@ def srange(s,
             continue
         m = integerRange.match(entry)
         if m:
-            start,end = list(map(int,m.groups()))
-            l[len(l):] = list(range(start,end+1))
+            start,end = map(int,m.groups())
+            l[len(l):] = range(start,end+1)
     return l
 
 def abspath(path,
@@ -293,7 +295,7 @@ class Application:
     verbose = 0
 
     # Internal errors to catch
-    InternalError = ""
+    InternalError = BaseException
 
     # Instance variables:
     values = None       # Dictionary of passed options (or default values)
@@ -324,13 +326,14 @@ class Application:
 
         # Append preset options
         for option in self.preset_options:
-            if option.name not in self.option_map:
+            if not option.name in self.option_map:
                 self.add_option(option)
 
         # Init .files list
         self.files = []
 
         # Start Application
+        rc = 0
         try:
             # Process startup
             rc = self.startup()
@@ -347,7 +350,8 @@ class Application:
             if rc is None:
                 rc = 0
 
-        except SystemExit as rc:
+        except SystemExit as rcException:
+            rc = rcException
             pass
 
         except KeyboardInterrupt:
@@ -458,7 +462,7 @@ class Application:
                 handler = getattr(self, handlername)
             except AttributeError:
                 if value == '':
-                    # count the number of occurances
+                    # count the number of occurrences
                     if optionname in values:
                         values[optionname] = values[optionname] + 1
                     else:
@@ -506,7 +510,8 @@ class Application:
             print(' %s' % self.version)
             print()
         if self.about:
-            print(string.strip(self.about % self.__dict__))
+            about = self.about % self.__dict__
+            print(about.strip())
             print()
         if note:
             print('-'*72)
@@ -534,7 +539,7 @@ class Application:
         if not options:
             print('  None')
             return
-        long = [x for x in options if x.prefix == '--']
+        int = [x for x in options if x.prefix == '--']
         short = [x for x in options if x.prefix == '-']
         items = short + int
         for o in options:
@@ -577,12 +582,14 @@ class Application:
 
         self.debug = 1
         # We don't want to catch internal errors:
-        self.InternalError = None
+        class NoErrorToCatch(Exception): pass
+        self.InternalError = NoErrorToCatch
 
     def handle__copyright(self,arg):
 
         self.print_header()
-        print(string.strip(self.copyright % self.__dict__))
+        copyright = self.copyright % self.__dict__
+        print(copyright.strip())
         print()
         return 0
 
@@ -592,7 +599,8 @@ class Application:
         if self.examples:
             print('Examples:')
             print()
-            print(string.strip(self.examples % self.__dict__))
+            examples = self.examples % self.__dict__
+            print(examples.strip())
             print()
         else:
             print('No examples available.')

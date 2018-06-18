@@ -5,7 +5,7 @@
 
     This module implements various different strategies for measuring
     performance timings. It tries to choose the best available method
-    based on the platforma and available tools.
+    based on the platform and available tools.
 
     On Windows, it is recommended to have the Mark Hammond win32
     package installed. Alternatively, the Thomas Heller ctypes
@@ -31,6 +31,9 @@
     the author. All Rights Reserved.
 
 """
+
+from __future__ import print_function
+
 import time, sys
 
 #

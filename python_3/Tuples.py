@@ -8,7 +8,7 @@ class TupleSlicing(Test):
 
     def test(self):
 
-        r = list(range(25))
+        r = range(25)
         t = tuple(range(100))
 
         for i in range(self.rounds):
@@ -257,7 +257,7 @@ class TupleSlicing(Test):
 
     def calibrate(self):
 
-        r = list(range(25))
+        r = range(25)
         t = tuple(range(100))
 
         for i in range(self.rounds):

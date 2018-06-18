@@ -475,9 +475,9 @@ class NestedForLoops(Test):
 
     def test(self):
 
-        l1 = list(range(1000))
-        l2 = list(range(10))
-        l3 = list(range(5))
+        l1 = range(1000)
+        l2 = range(10)
+        l3 = range(5)
         for i in range(self.rounds):
             for i in l1:
                 for j in l2:
@@ -486,9 +486,9 @@ class NestedForLoops(Test):
 
     def calibrate(self):
 
-        l1 = list(range(1000))
-        l2 = list(range(10))
-        l3 = list(range(5))
+        l1 = range(1000)
+        l2 = range(10)
+        l3 = range(5)
         for i in range(self.rounds):
             pass
 
@@ -500,7 +500,7 @@ class ForLoops(Test):
 
     def test(self):
 
-        l1 = list(range(100))
+        l1 = range(100)
         for i in range(self.rounds):
             for i in l1:
                 pass
@@ -559,6 +559,6 @@ class ForLoops(Test):
 
     def calibrate(self):
 
-        l1 = list(range(1000))
+        l1 = range(1000)
         for i in range(self.rounds):
             pass

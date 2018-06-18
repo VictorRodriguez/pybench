@@ -3,13 +3,14 @@
 """ A Python Benchmark Suite
 
 """
-#
-# Note: Please keep this module compatible to Python 1.5.2.
+# Note: Please keep this module compatible to Python 2.6.
 #
 # Tests may include features in later Python versions, but these
 # should then be embedded in try-except clauses in the configuration
 # module Setup.py.
 #
+
+from __future__ import print_function
 
 # pybench Copyright
 __copyright__ = """\
@@ -34,17 +35,19 @@ NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE !
 """
 
-import sys, time, operator, string, platform
+import sys
+import time
+import platform
 from CommandLine import *
-from functools import reduce
 
 try:
-    import _pickle as cPickle
+    import cPickle
+    pickle = cPickle
 except ImportError:
     import pickle
 
 # Version number; version history: see README file !
-__version__ = '2.0'
+__version__ = '2.1'
 
 ### Constants
 
@@ -72,11 +75,15 @@ ALLOW_SKIPPING_CALIBRATION = 1
 
 # Timer types
 TIMER_TIME_TIME = 'time.time'
+TIMER_TIME_PROCESS_TIME = 'time.process_time'
+TIMER_TIME_PERF_COUNTER = 'time.perf_counter'
 TIMER_TIME_CLOCK = 'time.clock'
 TIMER_SYSTIMES_PROCESSTIME = 'systimes.processtime'
 
 # Choose platform default timer
-if sys.platform[:3] == 'win':
+if hasattr(time, 'perf_counter'):
+    TIMER_PLATFORM_DEFAULT = TIMER_TIME_PERF_COUNTER
+elif sys.platform[:3] == 'win':
     # On WinXP this has 2.5ms resolution
     TIMER_PLATFORM_DEFAULT = TIMER_TIME_CLOCK
 else:
@@ -92,6 +99,10 @@ def get_timer(timertype):
 
     if timertype == TIMER_TIME_TIME:
         return time.time
+    elif timertype == TIMER_TIME_PROCESS_TIME:
+        return time.process_time
+    elif timertype == TIMER_TIME_PERF_COUNTER:
+        return time.perf_counter
     elif timertype == TIMER_TIME_CLOCK:
         return time.clock
     elif timertype == TIMER_SYSTIMES_PROCESSTIME:
@@ -106,16 +117,13 @@ def get_machine_details():
         print('Getting machine details...')
     buildno, builddate = platform.python_build()
     python = platform.python_version()
-    try:
-        chr(100000)
-    except ValueError:
+    # XXX this is now always UCS4, maybe replace it with 'PEP393' in 3.3+?
+    if sys.maxunicode == 65535:
         # UCS2 build (standard)
-        str = 'UCS2'
-    except NameError:
-        str = None
+        unitype = 'UCS2'
     else:
         # UCS4 build (most recent Linux distros)
-        str = 'UCS4'
+        unitype = 'UCS4'
     bits, linkage = platform.architecture()
     return {
         'platform': platform.platform(),
@@ -127,7 +135,7 @@ def get_machine_details():
         'compiler': platform.python_compiler(),
         'buildno': buildno,
         'builddate': builddate,
-        'unicode': str,
+        'unicode': unitype,
         'bits': bits,
         }
 
@@ -147,7 +155,8 @@ def print_machine_details(d, indent=''):
                                           d.get('buildno', 'n/a')),
          '   Unicode:        %s' % d.get('unicode', 'n/a'),
          ]
-    print(indent + ('\n' + indent).join(l) + '\n')
+    joiner = '\n' + indent
+    print(indent + joiner.join(l) + '\n')
 
 ### Test baseclass
 
@@ -177,7 +186,7 @@ class Test:
     # Version number of the test as float (x.yy); this is important
     # for comparisons of benchmark runs - tests with unequal version
     # number will not get compared.
-    version = 2.0
+    version = 2.1
 
     # The number of abstract operations done in each round of the
     # test. An operation is the basic unit of what you want to
@@ -230,7 +239,7 @@ class Test:
                 raise ValueError('at least one calibration run is required')
             self.calibration_runs = calibration_runs
         if timer is not None:
-            timer = timer
+            self.timer = timer
 
         # Init variables
         self.times = []
@@ -269,7 +278,7 @@ class Test:
 
         calibrate = self.calibrate
         timer = self.get_timer()
-        calibration_loops = list(range(CALIBRATION_LOOPS))
+        calibration_loops = range(CALIBRATION_LOOPS)
 
         # Time the calibration loop overhead
         prep_times = []
@@ -278,7 +287,7 @@ class Test:
             for i in calibration_loops:
                 pass
             t = timer() - t
-            prep_times.append(t)
+            prep_times.append(t / CALIBRATION_LOOPS)
         min_prep_time = min(prep_times)
         if _debug:
             print()
@@ -371,7 +380,7 @@ class Test:
         if runs == 0:
             return 0.0, 0.0, 0.0, 0.0
         min_time = min(self.times)
-        total_time = reduce(operator.add, self.times, 0.0)
+        total_time = sum(self.times)
         avg_time = total_time / float(runs)
         operation_avg = total_time / float(runs
                                            * self.rounds
@@ -406,7 +415,7 @@ class Benchmark:
     roundtime = 0
 
     # Benchmark version number as float x.yy
-    version = 2.0
+    version = 2.1
 
     # Produce verbose output ?
     verbose = 0
@@ -476,7 +485,7 @@ class Benchmark:
         if self.verbose:
             print('Searching for tests ...')
             print('--------------------------------------')
-        for testclass in list(setupmod.__dict__.values()):
+        for testclass in setupmod.__dict__.values():
             if not hasattr(testclass, 'is_a_test'):
                 continue
             name = testclass.__name__
@@ -489,8 +498,7 @@ class Benchmark:
                 warp=self.warp,
                 calibration_runs=self.calibration_runs,
                 timer=self.timer)
-        l = list(self.tests.keys())
-        l.sort()
+        l = sorted(self.tests)
         if self.verbose:
             for name in l:
                 print('  %s' % name)
@@ -507,8 +515,7 @@ class Benchmark:
             print()
             print('Test                              min      max')
             print('-' * LINE)
-        tests = list(self.tests.items())
-        tests.sort()
+        tests = sorted(self.tests.items())
         for i in range(len(tests)):
             name, test = tests[i]
             test.calibrate_test()
@@ -526,8 +533,7 @@ class Benchmark:
 
     def run(self):
 
-        tests = list(self.tests.items())
-        tests.sort()
+        tests = sorted(self.tests.items())
         timer = self.get_timer()
         print('Running %i round(s) of the suite at warp factor %i:' % \
               (self.rounds, self.warp))
@@ -551,11 +557,11 @@ class Benchmark:
                            min_overhead * MILLI_SECONDS))
             self.roundtimes.append(total_eff_time)
             if self.verbose:
-                print ('                   '
+                print('                   '
                        '               ------------------------------')
-                print(('                   '
+                print('                   '
                        '     Totals:    %6.0fms' %
-                       (total_eff_time * MILLI_SECONDS)))
+                       (total_eff_time * MILLI_SECONDS))
                 print()
             else:
                 print('* Round %i done in %.3f seconds.' % (i+1,
@@ -578,7 +584,7 @@ class Benchmark:
         if runs == 0:
             return 0.0, 0.0
         min_time = min(self.roundtimes)
-        total_time = reduce(operator.add, self.roundtimes, 0.0)
+        total_time = sum(self.roundtimes)
         avg_time = total_time / float(runs)
         max_time = max(self.roundtimes)
         return (min_time, avg_time, max_time)
@@ -599,11 +605,10 @@ class Benchmark:
 
     def print_benchmark(self, hidenoise=0, limitnames=None):
 
-        print ('Test                          '
+        print('Test                          '
                '   minimum  average  operation  overhead')
         print('-' * LINE)
-        tests = list(self.tests.items())
-        tests.sort()
+        tests = sorted(self.tests.items())
         total_min_time = 0.0
         total_avg_time = 0.0
         for name, test in tests:
@@ -624,20 +629,20 @@ class Benchmark:
                    op_avg * MICRO_SECONDS,
                    min_overhead *MILLI_SECONDS))
         print('-' * LINE)
-        print(('Totals:                        '
+        print('Totals:                        '
                ' %6.0fms %6.0fms' %
                (total_min_time * MILLI_SECONDS,
                 total_avg_time * MILLI_SECONDS,
-                )))
+                ))
         print()
 
     def print_comparison(self, compare_to, hidenoise=0, limitnames=None):
 
         # Check benchmark versions
         if compare_to.version != self.version:
-            print(('* Benchmark versions differ: '
+            print('* Benchmark versions differ: '
                    'cannot compare this benchmark to "%s" !' %
-                   compare_to.name))
+                   compare_to.name)
             print()
             self.print_benchmark(hidenoise=hidenoise,
                                  limitnames=limitnames)
@@ -645,15 +650,14 @@ class Benchmark:
 
         # Print header
         compare_to.print_header('Comparing with')
-        print ('Test                          '
+        print('Test                          '
                '   minimum run-time        average  run-time')
-        print ('                              '
+        print('                              '
                '   this    other   diff    this    other   diff')
         print('-' * LINE)
 
         # Print test comparisons
-        tests = list(self.tests.items())
-        tests.sort()
+        tests = sorted(self.tests.items())
         total_min_time = other_total_min_time = 0.0
         total_avg_time = other_total_avg_time = 0.0
         benchmarks_compatible = self.compatible(compare_to)
@@ -689,7 +693,7 @@ class Benchmark:
                 other_total_avg_time = other_total_avg_time + other_avg_time
                 if (benchmarks_compatible and
                     test.compatible(other)):
-                    # Both benchmark and tests are comparible
+                    # Both benchmark and tests are comparable
                     min_diff = ((min_time * self.warp) /
                                 (other_min_time * other.warp) - 1.0)
                     avg_diff = ((avg_time * self.warp) /
@@ -703,7 +707,7 @@ class Benchmark:
                     else:
                         avg_diff = '%+5.1f%%' % (avg_diff * PERCENT)
                 else:
-                    # Benchmark or tests are not comparible
+                    # Benchmark or tests are not comparable
                     min_diff, avg_diff = 'n/a', 'n/a'
                     tests_compatible = 0
             print('%30s: %5.0fms %5.0fms %7s %5.0fms %5.0fms %7s' % \
@@ -732,7 +736,7 @@ class Benchmark:
                      (other_total_avg_time * compare_to.warp) - 1.0) * PERCENT)
             else:
                 avg_diff = 'n/a'
-        print(('Totals:                       '
+        print('Totals:                       '
                '  %5.0fms %5.0fms %7s %5.0fms %5.0fms %7s' %
                (total_min_time * MILLI_SECONDS,
                 (other_total_min_time * compare_to.warp/self.warp
@@ -742,7 +746,7 @@ class Benchmark:
                 (other_total_avg_time * compare_to.warp/self.warp
                  * MILLI_SECONDS),
                 avg_diff
-               )))
+               ))
         print()
         print('(this=%s, other=%s)' % (self.name,
                                        compare_to.name))
@@ -840,7 +844,7 @@ python pybench.py -s p25.pybench -c p21.pybench
         print('-' * LINE)
         print('* using %s %s' % (
             getattr(platform, 'python_implementation', lambda:'Python')(),
-            ''.join(str.split(sys.version))))
+            ' '.join(sys.version.split())))
 
         # Switch off garbage collection
         if not withgc:
@@ -872,7 +876,18 @@ python pybench.py -s p25.pybench -c p21.pybench
             print('* using timer: systimes.processtime (%s)' % \
                   systimes.SYSTIMES_IMPLEMENTATION)
         else:
+            # Check that the clock function does exist
+            try:
+                get_timer(timer)
+            except TypeError:
+                print("* Error: Unknown timer: %s" % timer)
+                return
+
             print('* using timer: %s' % timer)
+            if hasattr(time, 'get_clock_info'):
+                info = time.get_clock_info(timer[5:])
+                print('* timer: resolution=%s, implementation=%s'
+                      % (info.resolution, info.implementation))
 
         print()
 
@@ -949,8 +964,6 @@ python pybench.py -s p25.pybench -c p21.pybench
                 bench.name = reportfile
                 pickle.dump(bench,f)
                 f.close()
-            except IOError as reason:
-                print('* Error opening/writing reportfile')
             except IOError as reason:
                 print('* Error opening/writing reportfile %s: %s' % (
                     reportfile,
